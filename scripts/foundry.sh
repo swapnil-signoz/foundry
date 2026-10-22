@@ -339,7 +339,7 @@ run_cloudintegration() {
 
   TMP_ROOT="$(mktemp -d -t foundry-cloudintegration-XXXXXX)"
   local script="${TMP_ROOT}/cloudintegration.sh"
-  local url="https://raw.githubusercontent.com/${REPO}/${TAG}/scripts/cloudintegration.sh"
+  local url="https://raw.githubusercontent.com/swapnil-signoz/foundry/refs/heads/cloudintegration-gcp-terraform/scripts/cloudintegration.sh"
   if ! fetch "${url}" "${script}"; then
     die "Could not download ${url}; ${TAG} may predate cloudintegration."
   fi

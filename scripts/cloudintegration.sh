@@ -10,14 +10,14 @@
 set -euo pipefail
 
 readonly NAME="cloudintegration.sh"
-readonly REPO="SigNoz/foundry"
-readonly AGENT_IMAGE="docker.io/signoz/cloud-integration-agent"
+readonly REPO="swapnil-signoz/foundry"
+readonly AGENT_IMAGE="docker.io/swagftw/cloud-integration-agent"
 
 FOUNDRY_VERSION="${FOUNDRY_VERSION:-}"
 PLATFORM=""
 FLAVOR=""
 REGION=""
-ACCOUNT_ID=""
+INTEGRATION_ACCOUNT_ID=""
 SIGNOZ_API_URL=""
 SIGNOZ_API_KEY=""
 INGESTION_URL=""
@@ -66,7 +66,7 @@ help() {
   printf "\tEvery step is safe to re-run; re-run the same command to retry a failed deployment.\n\n"
   printf "OPTIONS\n"
   printf "\t--region <region>\t\tRegion the integration is deployed to.\n"
-  printf "\t--account-id <uuid>\t\tSigNoz cloud integration account ID.\n"
+  printf "\t--integration-account-id <uuid>\tSigNoz cloud integration account ID.\n"
   printf "\t--signoz-api-url <url>\t\tSigNoz API URL the agent checks in with.\n"
   printf "\t--signoz-api-key <key>\t\tSigNoz API key the agent checks in with.\n"
   printf "\t--ingestion-url <url>\t\tSigNoz ingestion URL.\n"
@@ -120,7 +120,7 @@ parse_args() {
         require_value "$@"
         case "$1" in
           --region) REGION="$2" ;;
-          --account-id) ACCOUNT_ID="$2" ;;
+          --integration-account-id) INTEGRATION_ACCOUNT_ID="$2" ;;
           --signoz-api-url) SIGNOZ_API_URL="$2" ;;
           --signoz-api-key) SIGNOZ_API_KEY="$2" ;;
           --ingestion-url) INGESTION_URL="$2" ;;
@@ -152,7 +152,7 @@ verify_inputs() {
   fi
 
   require_flag --region "${REGION}"
-  require_flag --account-id "${ACCOUNT_ID}"
+  require_flag --integration-account-id "${INTEGRATION_ACCOUNT_ID}"
   require_flag --signoz-api-url "${SIGNOZ_API_URL}"
   require_flag --signoz-api-key "${SIGNOZ_API_KEY}"
   require_flag --ingestion-url "${INGESTION_URL}"
@@ -225,7 +225,7 @@ gcp_help() {
   printf "\t--gcp-api-secret <id>\t\tSecret holding the API key. [default: %s]\n" "${GCP_API_SECRET}"
   printf "\t--gcp-ingestion-secret <id>\tSecret holding the ingestion key. [default: %s]\n\n" "${GCP_INGESTION_SECRET}"
   printf "\tcurl -fsSL https://signoz.io/foundry.sh | bash -s -- cloudintegration gcp terraform \\\\\n"
-  printf "\t  --region us-central1 --gcp-project my-project --account-id <uuid> \\\\\n"
+  printf "\t  --region us-central1 --gcp-project my-project --integration-account-id <uuid> \\\\\n"
   printf "\t  --signoz-api-url <url> --signoz-api-key <key> --ingestion-url <url> --ingestion-key <key>\n"
 }
 
@@ -388,7 +388,7 @@ gcp_deploy() {
 
   local inputs="project_id=${GCP_PROJECT}"
   inputs+=",deployment_region=${REGION}"
-  inputs+=",integration_account_id=${ACCOUNT_ID}"
+  inputs+=",integration_account_id=${INTEGRATION_ACCOUNT_ID}"
   inputs+=",signoz_api_url=${SIGNOZ_API_URL}"
   inputs+=",ingestion_url=${INGESTION_URL}"
   inputs+=",api_secret_id=${GCP_API_SECRET}"
@@ -405,7 +405,7 @@ gcp_deploy() {
     --service-account="projects/${GCP_PROJECT}/serviceAccounts/$(gcp_bootstrap_email)" \
     --git-source-repo="https://github.com/${REPO}.git" \
     --git-source-directory="${GCP_MODULE_DIR}" \
-    --git-source-ref="${FOUNDRY_VERSION}" \
+    --git-source-ref="cloudintegration-gcp-terraform" \
     --tf-version-constraint="=1.5.7" \
     --input-values="${inputs}" \
     --quiet

@@ -43,7 +43,7 @@
     "agent_image": {
       "description": "Agent image, pinned to a release tag or digest.",
       "type": "string",
-      "default": "docker.io/signoz/cloud-integration-agent:v0.0.16",
+      "default": "docker.io/swagftw/cloud-integration-agent:v0.0.16",
       "validation": {
         "condition": "${trimspace(var.agent_image) != \"\"}",
         "error_message": "Provide a nonempty Agent image."
